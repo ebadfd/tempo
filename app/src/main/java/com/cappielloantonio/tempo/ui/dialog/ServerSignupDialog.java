@@ -3,11 +3,17 @@ package com.cappielloantonio.tempo.ui.dialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.cappielloantonio.tempo.R;
@@ -15,7 +21,6 @@ import com.cappielloantonio.tempo.databinding.DialogServerSignupBinding;
 import com.cappielloantonio.tempo.model.Server;
 import com.cappielloantonio.tempo.util.MusicUtil;
 import com.cappielloantonio.tempo.viewmodel.LoginViewModel;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -32,15 +37,15 @@ public class ServerSignupDialog extends DialogFragment {
     private String server;
     private String localAddress;
     private boolean lowSecurity = false;
+    private boolean allowCustomHeaders = false;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         bind = DialogServerSignupBinding.inflate(getLayoutInflater());
-
         loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
 
-        return new MaterialAlertDialogBuilder(getActivity())
+        return new AlertDialog.Builder(getActivity(), R.style.FullScreenDialog)
                 .setView(bind.getRoot())
                 .setTitle(R.string.server_signup_dialog_title)
                 .setNeutralButton(R.string.server_signup_dialog_neutral_button, (dialog, id) -> { })
@@ -74,6 +79,7 @@ public class ServerSignupDialog extends DialogFragment {
                 bind.serverTextView.setText(loginViewModel.getServerToEdit().getAddress());
                 bind.localAddressTextView.setText(loginViewModel.getServerToEdit().getLocalAddress());
                 bind.lowSecurityCheckbox.setChecked(loginViewModel.getServerToEdit().isLowSecurity());
+                bind.allowCustomHeadersCheckbox.setChecked(!Objects.requireNonNull(loginViewModel.getServerToEdit().getCustomHeaders()).isEmpty());
             }
         } else {
             loginViewModel.setServerToEdit(null);
@@ -106,6 +112,7 @@ public class ServerSignupDialog extends DialogFragment {
         server = bind.serverTextView.getText() != null && !bind.serverTextView.getText().toString().trim().isBlank() ? bind.serverTextView.getText().toString().trim() : null;
         localAddress = bind.localAddressTextView.getText() != null && !bind.localAddressTextView.getText().toString().trim().isBlank() ? bind.localAddressTextView.getText().toString().trim() : null;
         lowSecurity = bind.lowSecurityCheckbox.isChecked();
+        allowCustomHeaders= bind.allowCustomHeadersCheckbox.isChecked();
 
         if (TextUtils.isEmpty(serverName)) {
             bind.serverNameTextView.setError(getString(R.string.error_required));
@@ -137,6 +144,6 @@ public class ServerSignupDialog extends DialogFragment {
 
     private void saveServerPreference() {
         String serverID = loginViewModel.getServerToEdit() != null ? loginViewModel.getServerToEdit().getServerId() : UUID.randomUUID().toString();
-        loginViewModel.addServer(new Server(serverID, this.serverName, this.username, this.password, this.server, this.localAddress, System.currentTimeMillis(), this.lowSecurity));
+        loginViewModel.addServer(new Server(serverID, this.serverName, this.username, this.password, this.server, this.localAddress, System.currentTimeMillis(), this.lowSecurity, null));
     }
 }
