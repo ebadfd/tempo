@@ -112,7 +112,7 @@ public class ServerSignupDialog extends DialogFragment {
         server = bind.serverTextView.getText() != null && !bind.serverTextView.getText().toString().trim().isBlank() ? bind.serverTextView.getText().toString().trim() : null;
         localAddress = bind.localAddressTextView.getText() != null && !bind.localAddressTextView.getText().toString().trim().isBlank() ? bind.localAddressTextView.getText().toString().trim() : null;
         lowSecurity = bind.lowSecurityCheckbox.isChecked();
-        allowCustomHeaders= bind.allowCustomHeadersCheckbox.isChecked();
+        allowCustomHeaders = bind.allowCustomHeadersCheckbox.isChecked();
 
         if (TextUtils.isEmpty(serverName)) {
             bind.serverNameTextView.setError(getString(R.string.error_required));
@@ -144,6 +144,6 @@ public class ServerSignupDialog extends DialogFragment {
 
     private void saveServerPreference() {
         String serverID = loginViewModel.getServerToEdit() != null ? loginViewModel.getServerToEdit().getServerId() : UUID.randomUUID().toString();
-        loginViewModel.addServer(new Server(serverID, this.serverName, this.username, this.password, this.server, this.localAddress, System.currentTimeMillis(), this.lowSecurity, null));
+        loginViewModel.addServer(new Server(serverID, this.serverName, this.username, this.password, this.server, this.localAddress, System.currentTimeMillis(), this.lowSecurity, allowCustomHeaders? null: null));
     }
 }
