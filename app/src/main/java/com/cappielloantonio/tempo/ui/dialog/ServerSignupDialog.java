@@ -42,7 +42,9 @@ public class ServerSignupDialog extends DialogFragment {
     private String localAddress;
     private boolean lowSecurity = false;
     private boolean allowCustomHeaders = false;
+
     private Map<String, String> customHeaders = new HashMap<>();
+
     CustomHeadersAdapter adapter = new CustomHeadersAdapter(customHeaders, this::deleteCustomHeaders);
 
     @NonNull
